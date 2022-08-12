@@ -1,0 +1,52 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+
+- stage: dev
+  jobs:
+  - deployment: DummyDev
+    environment: dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo “hello world”
+
+- stage: stage
+  dependsOn: dev
+  jobs:
+  - deployment: DummyStage
+    environment: stage
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo “hello world”
+
+- stage: prod
+  dependsOn: stage
+  jobs:
+  - deployment: DummyProd
+    environment: prod
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo “hello world”
+
+- stage: dr
+  dependsOn: stage
+  jobs:
+  - deployment: DummyDr
+    environment: dr
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo “hello world”
