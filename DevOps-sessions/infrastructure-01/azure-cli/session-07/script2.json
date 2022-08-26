@@ -1,6 +1,6 @@
 {
     "region": "uksouth",
-    "resourceGroup": "infrastructure-02",
+    "resourceGroup": "infrastructure-01",
     "vnetName": "build-agents-vnet",
     "vnetAddressSpace": "10.0.0.0/16",
     "arrOfSubnets": [
