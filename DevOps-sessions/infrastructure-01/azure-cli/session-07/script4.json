@@ -1,0 +1,6 @@
+{
+    "resourceGroup": "infrastructure-01",
+    "vnetName": "build-agents-vnet",
+    "subnetName": "agents-subnet",
+    "nsgName": "build-agents-nsg"
+}
