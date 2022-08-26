@@ -3,7 +3,8 @@ parameterFile="script3.json";
 while [ "$1" != "" ]; do
     case $1 in
         -h | --help )       echo "Provide path to parameters file, eg. ./script3.sh script3.json"
-                            ;;
+                            exit 0
+							;;
         * )                 parameterFile=$1
                             ;;
     esac
