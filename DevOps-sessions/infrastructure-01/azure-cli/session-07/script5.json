@@ -1,0 +1,13 @@
+{
+    "region": "uksouth",
+    "resourceGroup": "infrastructure-01",
+    "vmName": "agent-01",
+    "vnetName": "build-agents-vnet",
+    "subnetName": "agents-subnet",
+    "vmTier": "Standard_DS1_v2",
+    "vmDiskTier": "P4",
+    "vmDiskSizeGb": "32",
+    "image": "Debian:debian-10:10:latest",
+    "imageType": "linux",
+    "reservedIp": "static"
+}
