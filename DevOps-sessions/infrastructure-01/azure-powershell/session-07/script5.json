@@ -1,0 +1,18 @@
+{
+    "region": "uksouth",
+    "resourceGroup": "infrastructure-02",
+    "adminLogin": "azureuser",
+    "adminPassword": "P455/w0rd",
+    "vmName": "agent-01",
+    "vnetName": "build-agents-vnet",
+    "subnetName": "agents-subnet",
+    "publicDnsName": "myVM",
+    "vmTier": "Standard_DS1_v2",
+    "vmDiskTier": "P4",
+    "vmDiskSizeGb": "32",
+    "imagePublisher": "Debian",
+    "imageOffer": "debian-10",
+    "imageSkus": "10-gen2",
+    "imageType": "Linux",
+    "imageVersion": "latest"
+}
