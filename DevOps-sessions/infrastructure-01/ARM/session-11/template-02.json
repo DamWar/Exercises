@@ -1,0 +1,85 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "serverName": {
+            "type": "string",
+            "defaultValue": "exampleplan"
+        },
+        "dbName": {
+            "type": "string",
+            "minLength": 2
+        },
+        "dbTier": {
+            "type": "string",
+            "minLength": 2,
+            "defaultValue": "S1"
+        },
+        "dbBackupPolicy": {
+            "type": "object"
+        },
+        "firewallRules": {
+            "type": "array"
+        }
+    },
+    "variables":{
+        "dbName": "[concat(parameters('serverName'), '/' ,parameters('dbName'))]",
+        "buName": "[concat(variables('dbName'), '/Default')]",
+        "firewallName": "[concat(parameters('serverName'), '/ipRule')]"
+    },
+    "resources": [
+        { // server
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2022-02-01-preview",
+            "name": "[parameters('serverName')]",
+            "location": "[parameters('region')]",
+            "properties": {
+                "administratorLogin": "azureuser",
+                "administratorLoginPassword": "P455/w0rd",
+                "version": "12.0"
+            }
+        },
+        {// database
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2022-02-01-preview",
+            "name": "[variables('dbName')]",
+            "location": "[parameters('region')]",
+            "sku": {
+                "name": "[parameters('dbTier')]",
+            },
+            "properties": {
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "maxSizeBytes": 1073741824
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('serverName'))]"
+            ]
+        },
+        {// bu policy
+            "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
+            "apiVersion": "2022-02-01-preview",
+            "name": "[variables('buName')]",
+            "properties": "[parameters('dbBackupPolicy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('serverName'), parameters('dbName'))]"
+            ]
+        },
+        {// firewall
+            "type": "Microsoft.Sql/servers/firewallRules",
+            "apiVersion": "2021-02-01-preview",
+            "name": "[concat(variables('firewallName'), copyIndex())]",
+            "properties": "[parameters('firewallRules')[copyIndex()]]",
+            "copy": {
+                "name": "firewallCopy",
+                "count": "[length(parameters('firewallRules'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('serverName'))]"
+            ]
+        }
+    ]
+}
