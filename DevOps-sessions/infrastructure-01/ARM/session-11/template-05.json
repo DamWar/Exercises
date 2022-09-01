@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appName": {
+            "type": "string",
+            "minLength": 2
+        },
+        "storageName": {
+            "type": "string"
+        },
+        "storageContainerSAS": {
+            "type": "string"
+        },
+        "scheduleAndRetention": {
+            "type": "object"
+        },
+        "databases": {
+            "type": "array"
+        }
+    },
+    "variables":{
+        "buName": "[concat(parameters('appName'), '/backup')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2020-06-01",
+            "name": "[variables('buName')]",
+            "kind": "backup",
+            "properties": {
+                "backupName": "app-bu",
+                "backupSchedule": "[parameters('scheduleAndRetention')]",
+                "databases": "[parameters('databases')]",
+                "enabled": "True",
+                "storageAccountUrl": "[concat('https://', parameters('storageName'), '.blob.core.windows.net/', parameters('storageContainerSAS'))]"
+            }
+        }
+    ]
+}
