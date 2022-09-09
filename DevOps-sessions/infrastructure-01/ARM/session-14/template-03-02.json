@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "vaultName": {
+            "type": "string"
+        },
+        "appName": {
+            "type": "string",
+            "minLength": 2
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2022-07-01",
+            "name": "[parameters('vaultName')]",
+            "location": "[parameters('region')]",
+            "properties": {
+                "accessPolicies": [
+                    {
+                        "objectId": "[reference(resourceId('Microsoft.Web/sites', parameters('appName')), '2021-03-01', 'Full').identity.principalId]",
+                        "permissions": {
+                            "secrets": [ "get", "list" ]
+                        },
+                        "tenantId": "[subscription().tenantId]"
+                    }
+                ],
+                "createMode": "default",
+                "sku": {
+                    "family": "A",
+                    "name": "standard"
+                },
+                "tenantId": "[subscription().tenantId]"
+            }
+        }
+    ]
+}
