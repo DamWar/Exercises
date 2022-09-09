@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "gatewayName": {
+            "value": "gateway-01"
+        },
+        "gatewaySubnetName": {
+            "value": "gateways"
+        },
+        "vnetName": {
+            "value": "infrastructure-03-vnet"
+        },
+        "appName": {
+            "value": "damwar-app-01"
+        },
+        "planName": {
+            "value": "damwar-app-plan-01"
+        },
+        "planTier": {
+            "value": "S1"
+        },
+        "nodesInWebFarm": {
+            "value": 2
+        },
+        "dockerHubImage": {
+            "value": "nginx:alpine"
+        },
+        "vnetAddressSpace": {
+            "value": "10.0.0.0/16"
+        },
+        "subnets": {
+            "value": [
+                {
+                    "name": "resources",
+                    "properties": {
+                        "addressPrefix": "10.0.1.0/24"
+                    }
+                },
+                {
+                    "name": "endpoints",
+                    "properties": {
+                        "addressPrefix": "10.0.2.0/24"
+                    }
+                },
+                {
+                    "name": "gateways",
+                    "properties": {
+                        "addressPrefix": "10.0.255.0/24"
+                    }
+                }
+            ]
+        },
+        "privateEndpoints": {
+            "value": [
+                {
+                    "name": "private-endpoint-01",
+                    "subnet": {
+                        "type": "Microsoft.Network/virtualNetworks/subnets",
+                        "vnetName": "infrastructure-03-vnet",
+                        "subnetName": "endpoints"
+                    },
+                    "privateLinkServiceConnections": {
+                        "name": "agents",
+                        "properties": {
+                            "privateLinkServiceResource": {
+                                "type": "Microsoft.Web/sites",
+                                "name": "damwar-app-01"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "wafRules": {
+            "value": {
+                "enabled": "True",
+                "firewallMode": "Prevention",
+                "ruleSetType": "OWASP",
+                "ruleSetVersion": "3.2"
+            }
+        }
+    }
+}
