@@ -1,0 +1,94 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "resourceGroup": {
+            "type": "string",
+            "defaultValue": "infrastructure-03"
+        },
+        "appName": {
+            "type": "string"
+        },
+        "planName": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "dockerHubImage": {
+            "type": "string",
+            "defaultValue": "nginx:alpine",
+            "metadata": {
+                "description": "The Runtime stack of current web app"
+            }
+        },
+        "vnetAddressSpace": {
+            "type": "string"
+        },
+        "subnets": {
+            "type": "array"
+        }
+    },
+    "variables": {
+        "subnetId": "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+        "linuxFxVersion": "[concat('DOCKER|', parameters('dockerHubImage'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('appName')]",
+            "location": "[parameters('region')]",
+            "resources": [
+                {
+                    "name": "virtualNetwork",
+                    "type": "config",
+                    "apiVersion": "2021-02-01",
+                    "location": "[parameters('region')]",
+                    "properties": {
+                        "subnetResourceid": "[variables('subnetId')]",
+                        "swiftSupported": true
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', parameters('appName'))]",
+                        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+                    ]
+                }
+            ],
+            "kind": "app",
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('planName'))]",
+                "siteConfig": {
+                    "linuxFxVersion": "[variables('linuxFxVersion')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2021-08-01",
+            "name": "[parameters('vnetName')]",
+            "location": "[parameters('region')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressSpace')]"
+                    ]
+                },
+                "copy": [
+                    {
+                        "name": "subnets",
+                        "count": "[length(parameters('subnets'))]",
+                        "input": "[parameters('subnets')[copyIndex('subnets')]]"
+                    }
+                ]
+            }
+        }
+    ]
+}
