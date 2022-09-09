@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "resourceGroup": {
+            "type": "string",
+            "defaultValue": "infrastructure-03"
+        },
+        "nsgName": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "subnetAddressSpace": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "subnetName": "[concat(parameters('vnetName'), '/', parameters('subnetName'))]",
+        "nsgId": "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-06-01",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[variables('subnetName')]",
+            "location": "[parameters('region')]",
+            "properties": {
+                "addressPrefix": "[parameters('subnetAddressSpace')]",//reference creates circular dependency
+                "networkSecurityGroup": {
+                    "id": "[variables('nsgId')]"
+                }
+            }
+        }
+    ]
+}
