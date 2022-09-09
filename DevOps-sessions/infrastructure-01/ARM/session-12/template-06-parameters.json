@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "gatewayName": {
+            "value": "gateway-01"
+        },
+        "vnetName": {
+            "value": "infrastructure-03-vnet"
+        },
+        "subnetName": {
+            "value": "jumpbox"
+        },
+        "privateEndpoints": {
+            "value": [
+                {
+                    "name": "private-endpoint-01",
+                    "subnet": {
+                        "type": "Microsoft.Network/virtualNetworks/subnets",
+                        "vnetName": "infrastructure-03-vnet",
+                        "subnetName": "agents"
+                    },
+                    "privateLinkServiceConnections": {
+                        "name": "agents",
+                        "properties": {
+                            "privateLinkServiceResource": {
+                                "type": "Microsoft.Web/sites",
+                                "name": "damwar-app-01"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "wafRules": {
+            "value": {
+                "enabled": "True",
+                "firewallMode": "Prevention",
+                "ruleSetType": "OWASP",
+                "ruleSetVersion": "3.2"
+            }
+        }
+    }
+}
