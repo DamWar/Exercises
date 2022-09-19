@@ -18,7 +18,7 @@ WORKDIR /azp
 COPY ./start.sh .
 RUN chmod +x start.sh
 
-RUN sudo apt-get install -y dotnet6
-RUN sudo apt-get install -y dotnet-runtime-6.0
+RUN apt-get install -y dotnet6
+RUN apt-get install -y dotnet-runtime-6.0
 
 ENTRYPOINT [ "./start.sh" ]
