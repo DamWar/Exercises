@@ -20,5 +20,3 @@ RUN chmod +x start.sh
 
 RUN apt-get install -y dotnet6
 RUN apt-get install -y dotnet-runtime-6.0
-
-ENTRYPOINT [ "./start.sh" ]
