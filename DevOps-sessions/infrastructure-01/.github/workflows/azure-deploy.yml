@@ -25,10 +25,16 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          az account set --subscription 'ee2ffa02-277f-440a-82c4-ee55fa6db9f5'
-          az group update --name 'infrastructure-02'
-          cd azure-cli/session-07
-          chmod +x script2.sh
-          ./script2.sh
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy from scripts
+        run:  |
+              az config set defaults.group=infrastructure-01
+              cd azure-cli
+              cd session-07
+              chmod 755 script2.sh
+              ./script2.sh
+              chmod 755 script3.sh
+              ./script3.sh

@@ -1,0 +1,26 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'Azure'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript:   |
+                      az config set defaults.group=infrastructure-01
+                      cd azure-cli
+                      cd session-07
+                      chmod 755 script2.sh
+                      ./script2.sh
+                      chmod 755 script3.sh
+                      ./script3.sh
+  
