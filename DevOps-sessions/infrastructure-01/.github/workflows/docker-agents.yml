@@ -31,5 +31,6 @@ jobs:
                 docker push damwar/dotnet-sdk:latest
         - name: Build and push Node agent
           run:  |
+                cd docker
                 docker build -t damwar/node-sdk:latest -f Dockerfile-node .
                 docker push damwar/node-sdk:latest
