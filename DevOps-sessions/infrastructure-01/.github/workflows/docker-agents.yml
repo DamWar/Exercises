@@ -1,4 +1,4 @@
-name: Docker build dotnet
+name: Docker build dotnet and Node
 
 on: 
   push:
