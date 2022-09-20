@@ -1,4 +1,4 @@
-FROM Ubuntu:22.04
+FROM ubuntu:22.04
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
