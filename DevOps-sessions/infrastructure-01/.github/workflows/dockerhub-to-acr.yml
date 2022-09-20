@@ -31,6 +31,8 @@ jobs:
                 az acr login --name damwarregistry.azurecr.io
                 docker pull damwar/node-sdk:latest
                 docker tag damwar/node-sdk:latest damwarregistry.azurecr.io/sdks/node-sdk
+                docker push damwarregistry.azurecr.io/sdks/node-sdk
                 docker pull damwar/dotnet-sdk:latest
                 docker tag damwar/dotnet-sdk:latest damwarregistry.azurecr.io/sdks/dotnet-sdk
+                docker push damwarregistry.azurecr.io/sdks/dotnet-sdk
                 
