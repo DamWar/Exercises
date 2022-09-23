@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "nsgName": {
+            "value": "infrastructure-03-nsg"
+        },
+        "rules": {
+            "value": [
+                {
+                    "name": "AllowInbound80",
+                    "properties": {
+                        "access": "Allow",
+                        "destinationAddressPrefix": "10.0.0.0/16",
+                        "destinationPortRange": "80",
+                        "direction": "Inbound",
+                        "priority": 300,
+                        "protocol": "TCP",
+                        "sourceAddressPrefix": "*",
+                        "sourcePortRange": "*"
+                    }
+                }
+            ]
+        },
+        "vnetName": {
+            "value": "infrastructure-03-vnet"
+        },
+        "vnetAddressSpace": {
+            "value": "10.0.0.0/16"
+        },
+        "subnets": {
+            "value": [
+                {
+                    "name": "agents",
+                    "properties": {
+                        "addressPrefix": "10.0.1.0/24"
+                    }
+                },
+                {
+                    "name": "jumpbox",
+                    "properties": {
+                        "addressPrefix": "10.0.2.0/24"
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "serverName": {
+            "value": "damwar-sql-server-01"
+        },
+        "dbName": {
+            "value": "damwar-sql-db-01"
+        },
+        "adminLogin": {
+            "value": "azureuser"
+        },
+        "adminPassword": {
+            "value": "P455/w0rd"
+        },
+        "dbBackupPolicy": {
+            "value": {
+                "diffBackupIntervalInHours": 24,
+                "retentionDays": 14
+            }
+        },
+        "firewallRules": {
+            "value": [
+                {
+                    "endIpAddress": "0.0.0.0",
+                    "startIpAddress": "0.0.0.0"
+                },
+                {
+                    "endIpAddress": "0.0.0.1",
+                    "startIpAddress": "0.0.0.0"
+                }
+            ]
+        }
+    }
+}
