@@ -67,7 +67,7 @@
     "resources": [
         {
             "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2021-08-01",
+            "apiVersion": "2020-11-01",
             "name": "[parameters('vnetName')]",
             "location": "[parameters('region')]",
             "properties": {
@@ -97,8 +97,8 @@
             },
             "kind": "linux",
             "properties": {
-                "perSiteScaling": "false",
-                "reserved": "true",
+                "perSiteScaling": false,
+                "reserved": true,
                 "targetWorkerCount": 0,
                 "targetWorkerSizeId": 0
             }
@@ -113,6 +113,7 @@
             ],
             "kind": "app",
             "properties": {
+                "httpsOnly": false,
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('planName'))]",
                 "siteConfig": {
                     "linuxFxVersion": "[variables('linuxFxVersion')]"
@@ -134,7 +135,7 @@
         },
         {
             "type": "Microsoft.Network/applicationGateways",
-            "apiVersion": "2022-01-01",
+            "apiVersion": "2020-11-01",
             "name": "[parameters('gatewayName')]",
             "location": "[parameters('region')]",
             "properties": {
@@ -150,7 +151,10 @@
                         "properties": {
                             "backendAddresses": [
                                 {
-                                    "fqdn": "[concat(parameters('appName'), '.', variables('privateDnsZone'))]",
+                                    "fqdn": "[concat(parameters('appName'), '.', variables('privateDnsZone'))]"
+                                },
+                                {
+                                    "ipAddress": "[parameters('privateEndpoints')[0].privateIPAddress]"
                                 }
                             ]
                         }
@@ -160,6 +164,7 @@
                     {
                         "name": "[variables('backendHttpSettings')]",
                         "properties": {
+                            "hostName": "[concat(parameters('appName'), '.azurewebsites.net')]",
                             "port": 80,
                             "protocol": "Http",
                             "requestTimeout": 30
@@ -181,7 +186,7 @@
                     {
                         "name": "[variables('frontendPort')]",
                         "properties": {
-                            "port": 777
+                            "port": 80
                         }
                     }
                 ],
@@ -211,7 +216,7 @@
                             "FrontendPort": {
                                 "Id": "[resourceId('Microsoft.Network/applicationgateways/frontendPorts', parameters('gatewayName'), variables('frontendPort'))]"
                             },
-                            "protocol": "http",
+                            "protocol": "http"
                         }
                     }
                 ],
@@ -229,15 +234,15 @@
                             "httpListener": {
                                 "id": "[resourceId('Microsoft.Network/applicationgateways/httpListeners', parameters('gatewayName'), variables('httpListener'))]"
                             },
-                            "ruleType": "basic",
+                            "ruleType": "basic"
                         }
                     }
-                ],
+                ]
             }
         },
         {
             "type": "Microsoft.Network/privateEndpoints",
-            "apiVersion": "2020-03-01",
+            "apiVersion": "2021-03-01",
             "name": "[parameters('privateEndpoints')[copyindex()].name]",
             "location": "[parameters('region')]",
             "dependsOn": [
@@ -246,13 +251,23 @@
                 "[parameters('gatewayName')]"
             ],
             "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[concat(parameters('privateEndpoints')[copyindex()].name, '-pip')]",
+                        "properties": {
+                            "groupId": "sites",
+                            "memberName": "sites",
+                            "privateIPAddress": "[parameters('privateEndpoints')[copyIndex()].privateIPAddress]"
+                        }
+                    }
+                ],
                 "subnet": {
                     "id": "[resourceId(parameters('privateEndpoints')[copyindex()].subnet.type, parameters('privateEndpoints')[copyindex()].subnet.vnetName, parameters('privateEndpoints')[copyindex()].subnet.subnetName)]",
                     "applicationGatewayIpConfigurations": [
                         {
                             "id": "[resourceId('Microsoft.Network/applicationGateways/gatewayIpConfigurations', parameters('gatewayName'), variables('gatewayIpConf'))]"
                         }
-                    ],
+                    ]
                 },
                 "privateLinkServiceConnections": [
                     {
@@ -273,18 +288,18 @@
         },
         {
             "type": "Microsoft.Network/privateDnsZones",
-            "apiVersion": "2020-06-01",
+            "apiVersion": "2018-09-01",
             "name": "[variables('privateDnsZone')]",
             "location": "Global",
             "properties": {}
         },
         {
             "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-            "apiVersion": "2020-06-01",
+            "apiVersion": "2018-09-01",
             "name": "[concat(variables('privateDnsZone'), '/', variables('privateDnsZone'), '-link')]",
             "location": "Global",
             "properties": {
-                "registrationEnabled": "false",
+                "registrationEnabled": false,
                 "virtualNetwork": {
                     "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
                 }
@@ -296,13 +311,13 @@
         },
         {
             "type": "Microsoft.Network/privateDnsZones/A",
-            "apiVersion": "2020-06-01",
+            "apiVersion": "2018-09-01",
             "name": "[concat(variables('privateDnsZone'), '/', parameters('appName'))]",
             "properties": {
                 "ttl": 3600,
                 "aRecords": [
                     {
-                        "ipv4Address": "[reference(resourceId('Microsoft.Web/sites', parameters('appName')), '2016-03-01', 'Full').properties.inboundIpAddress]"
+                        "ipv4Address": "[parameters('privateEndpoints')[0].privateIPAddress]"
                     }
                 ]
             },

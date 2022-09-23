@@ -27,7 +27,7 @@
             "value": 2
         },
         "dockerHubImage": {
-            "value": "nginx:alpine"
+            "value": "yeasy/simple-web:latest"
         },
         "vnetAddressSpace": {
             "value": "10.0.0.0/16"
@@ -49,7 +49,7 @@
                 {
                     "name": "gateways",
                     "properties": {
-                        "addressPrefix": "10.0.255.0/24"
+                        "addressPrefix": "10.0.254.0/24"
                     }
                 }
             ]
@@ -58,13 +58,14 @@
             "value": [
                 {
                     "name": "private-endpoint-01",
+                    "privateIpAddress": "10.0.2.4",
                     "subnet": {
                         "type": "Microsoft.Network/virtualNetworks/subnets",
                         "vnetName": "infrastructure-03-vnet",
                         "subnetName": "endpoints"
                     },
                     "privateLinkServiceConnections": {
-                        "name": "agents",
+                        "name": "plink-01",
                         "properties": {
                             "privateLinkServiceResource": {
                                 "type": "Microsoft.Web/sites",
