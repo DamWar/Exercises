@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "vmName": {
+            "value": "infrastructure-03-vm"
+        },
+        "vnetName": {
+            "value": "infrastructure-03-vnet"
+        },
+        "subnetName": {
+            "value": "agents"
+        },
+        "vmImage": {
+            "value": {
+                "publisher": "OpenLogic",
+                "offer": "CentOS",
+                "sku": "7.5",
+                "version": "latest"
+            }
+        },
+        "vmTier": {
+            "value": "Standard_D1_v2"
+        },
+        "vmDiskTier": {
+            "value": "StandardSSD_LRS"
+        },
+        "vmDiskSizeGb": {
+            "value": 50
+        }
+    }
+}
