@@ -15,6 +15,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-08-01' = {
   }
 }
 
+@batchSize(1)
 resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-08-01' = [for sub in subnets: {
   parent: vnet
   name: sub.name
