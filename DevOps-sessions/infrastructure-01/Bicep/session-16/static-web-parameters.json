@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "storageName": {
+            "value": "damwarstorage2"
+        },
+        "indexDocument": {
+            "value": "index.html"
+        },
+        "errorDocument404": {
+            "value": "404.html"
+        }
+    }
+}
