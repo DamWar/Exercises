@@ -1,0 +1,1 @@
+Due to how Terraform works and for easier verification I decided to make bigger templates accomplishing multiple tasks at the same time.
