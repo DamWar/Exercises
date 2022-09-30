@@ -1,0 +1,102 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "region": {
+      "type": "string",
+      "defaultValue": "westeurope"
+    },
+    "storageName": {
+      "type": "string"
+    },
+    "storageTier": {
+      "type": "string",
+      "defaultValue": "Standard_LRS"
+    },
+    "indexDocument": {
+      "type": "string"
+    },
+    "errorDocument404": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "storageAccountContributor": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '17d1049b-9a84-46fb-8f53-869881c3d3ab')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-09-01",
+      "name": "[parameters('storageName')]",
+      "location": "[parameters('region')]",
+      "sku": {
+        "name": "[parameters('storageTier')]"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "supportsHttpsTrafficOnly": true
+      }
+    },
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2018-11-30",
+      "name": "damwar-identity-01",
+      "location": "[parameters('region')]"
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-04-01-preview",
+      "scope": "[format('Microsoft.Storage/storageAccounts/{0}', parameters('storageName'))]",
+      "name": "[guid(resourceGroup().id, variables('storageAccountContributor'))]",
+      "properties": {
+        "roleDefinitionId": "[variables('storageAccountContributor')]",
+        "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'damwar-identity-01')).principalId]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'damwar-identity-01')]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "enable-static-website",
+      "location": "[parameters('region')]",
+      "kind": "AzurePowerShell",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'damwar-identity-01'))]": {}
+        }
+      },
+      "properties": {
+        "azPowerShellVersion": "3.0",
+        "scriptContent":  "
+                            param(
+                            [string] $resourceGroupName,
+                            [string] $storageName,
+                            [string] $indexDocument,
+                            [string] $errorDocument404
+                            )
+                            
+                            $storageAccount = Get-AzStorageAccount      `
+                            -ResourceGroupName $resourceGroupName       `
+                            -AccountName $storageName                   
+                            
+                            $ctx = $storageAccount.Context
+                            
+                            Enable-AzStorageStaticWebsite               `
+                            -Context $ctx                               `
+                            -IndexDocument $indexDocument               `
+                            -ErrorDocument404Path $errorDocument404
+                          ",
+        "retentionInterval": "P1D",
+        "arguments": "[format('-ResourceGroupName \"{0}\" -storageName \"{1}\" -IndexDocument \"{2}\" -errorDocument404 \"{3}\"', resourceGroup().name, parameters('storageName'), parameters('indexDocument'), parameters('errorDocument404'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', 'damwar-identity-01')]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
+      ]
+    }
+  ]
+}
