@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "vaultName": {
+            "value": "damwar-vault-01"
+        },
+        "accessPolicies": {
+            "value": [
+                {
+                    "objectId": "9a099df0-31b4-4b82-aa6a-313bf91a495a",
+                    "permissions": {
+                        "certificates": [ "all" ],
+                        "keys": [ "all" ],
+                        "secrets": [ "all" ],
+                        "storage": [ "all" ]
+                    },
+                    "tenantId": "a228b3d5-0cd7-4f2b-83b7-f99997be2e17"
+                }
+            ]
+        }
+    }
+}
