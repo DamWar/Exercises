@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "vnetName": {
+            "value": "infrastructure-03-vnet"
+        },
+        "vnetAddressSpace": {
+            "value": "10.0.0.0/16"
+        },
+        "subnetName": {
+            "value": "endpoints"
+        },
+        "subnets": {
+            "value": [
+                {
+                    "name": "resources",
+                    "properties": {
+                        "addressPrefix": "10.0.1.0/24"
+                    }
+                },
+                {
+                    "name": "endpoints",
+                    "properties": {
+                        "addressPrefix": "10.0.2.0/24"
+                    },
+                    "serviceEndpoints": [
+                        {
+                            "service": "Microsoft.Sql",
+                            "locations": [
+                                "westeurope"
+                            ]
+                        }
+                    ],
+                    "PrivateEndpointNetworkPolicies": "Disabled",
+                    "PrivateLinkServiceNetworkPolicies": "Disabled"
+                },
+                {
+                    "name": "gateways",
+                    "properties": {
+                        "addressPrefix": "10.0.254.0/24"
+                    }
+                }
+            ]
+        },
+        "serverName": {
+            "value": "damwar-sql-server-01"
+        },
+        "dbName": {
+            "value": "damwar-sql-db-01"
+        },
+        "adminLogin": {
+            "value": "azureuser"
+        },
+        "adminPassword": {
+            "value": "P455/w0rd"
+        },
+        "dbBackupPolicy": {
+            "value": {
+                "diffBackupIntervalInHours": 24,
+                "retentionDays": 14
+            }
+        },
+        "firewallRules": {
+            "value": [
+                {
+                    "endIpAddress": "10.0.2.255",
+                    "startIpAddress": "10.0.2.0"
+                }
+            ]
+        }
+    }
+}
