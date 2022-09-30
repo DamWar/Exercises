@@ -1,0 +1,63 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "planName": {
+            "value": "damwar-app-plan-01"
+        },
+        "appName": {
+            "value": "damwar-app-01"
+        },
+        "planTier": {
+            "value": "S1"
+        },
+        "nodesInWebFarm": {
+            "value": 2
+        },
+        "dockerHubImage": {
+            "value": "nginx:alpine"
+        },
+        "vnetName": {
+            "value": "infrastructure-03-vnet"
+        },
+        "subnetName": {
+            "value": "endpoints"
+        },
+        "vnetAddressSpace": {
+            "value": "10.0.0.0/16"
+        },
+        "subnets": {
+            "value": [
+                {
+                    "name": "resources",
+                    "properties": {
+                        "addressPrefix": "10.0.1.0/24"
+                    }
+                },
+                {
+                    "name": "endpoints",
+                    "properties": {
+                        "addressPrefix": "10.0.2.0/24",
+                        "delegations": [
+                            {
+                                "name": "delegation",
+                                "properties": {
+                                    "serviceName": "Microsoft.Web/serverFarms"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "gateways",
+                    "properties": {
+                        "addressPrefix": "10.0.254.0/24"
+                    }
+                }
+            ]
+        }
+    }
+}
