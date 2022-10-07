@@ -21,11 +21,20 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript:   |
-                      apt-get install zip -y
-                      zip -r '${{ variables.packageName }}' code
                       chmod 755 templates/automated-deployment.sh
                       templates/automated-deployment.sh
+    displayName: Deploy infrastructure
+    
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'Azure'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript:   |
+                      apt-get install zip -y
+                      zip -r '${{ variables.packageName }}' code
                       az storage copy -s '${{ variables.packageName }}' -d '${{ variables.containerUrl }}/${{ variables.packageName }}'
+    displayName: Upload code package
 
 
   
