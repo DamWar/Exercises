@@ -21,8 +21,9 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript:   |
-                      chmod 755 templates/automated-deployment.sh
-                      templates/automated-deployment.sh
+                      cd templates
+                      chmod 755 automated-deployment.sh
+                      ./automated-deployment.sh
     displayName: Deploy infrastructure
     
   - task: AzureCLI@2
