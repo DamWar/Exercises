@@ -1,5 +1,9 @@
 region = "westeurope"
 
+rg = {
+  name = "infrastructure-02"
+}
+
 nsg = {
   name = "tf-nsg-01"
 }
@@ -34,16 +38,20 @@ vnet = {
   addressSpace = ["10.0.0.0/16"]
   subnets = [
     {
-      name            = "resources"
+      name            = "integration"
       addressPrefixes = ["10.0.1.0/24"]
     },
     {
-      name            = "endpoints"
+      name            = "resources"
       addressPrefixes = ["10.0.2.0/24"]
     },
     {
-      name            = "gateways"
+      name            = "endpoints"
       addressPrefixes = ["10.0.3.0/24"]
+    },
+    {
+      name            = "gateways"
+      addressPrefixes = ["10.0.4.0/24"]
     }
   ]
 }
@@ -95,7 +103,7 @@ sql = {
       end_ip_address   = "10.0.2.255"
     },
     {
-      name             = "resources rule"
+      name             = "Integration rule"
       start_ip_address = "10.0.1.0"
       end_ip_address   = "10.0.1.255"
     }
@@ -103,8 +111,11 @@ sql = {
 }
 
 app = {
-  name  = "damwar-app-tf"
-  tier  = "S1"
+  name = "damwar-app-tf"
+  plan = {
+    name = "damwar-app-tf-plan"
+    tier = "S1"
+  }
   nodes = 2
   docker = {
     image = "nginx"
@@ -116,7 +127,7 @@ app = {
       unit     = "Day"
     }
   }
-  subnet = "resources"
+  subnet = "integration"
 }
 
 privateEndpoint = {
@@ -127,6 +138,7 @@ privateEndpoint = {
 }
 
 gateway = {
+  name   = "tf-appgateway"
   subnet = "gateways"
   waf = {
     firewall_mode    = "Detection"

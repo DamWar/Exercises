@@ -2,6 +2,12 @@ variable "region" {
   type = string
 }
 
+variable "rg" {
+  type = object({
+    name = string
+  })
+}
+
 variable "nsg" {
   type = object({
     name = string
@@ -79,8 +85,11 @@ variable "sql" {
 
 variable "app" {
   type = object({
-    name  = string
-    tier  = string
+    name = string
+    plan = object({
+      name = string
+      tier = string
+    })
     nodes = number
     docker = object({
       image = string
@@ -107,6 +116,7 @@ variable "privateEndpoint" {
 
 variable "gateway" {
   type = object({
+    name   = string
     subnet = string
     waf = object({
       firewall_mode    = string

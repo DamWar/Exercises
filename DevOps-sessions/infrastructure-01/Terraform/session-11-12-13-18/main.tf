@@ -24,7 +24,7 @@ locals {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "infrastructure-02"
+  name     = var.rg.name
   location = var.region
 }
 
@@ -202,12 +202,12 @@ data "azurerm_storage_account_blob_container_sas" "containerSas" {
 }
 
 resource "azurerm_service_plan" "appPlan" {
-  name                = "${var.app.name}-plan"
+  name                = var.app.plan.name
   location            = var.region
   resource_group_name = azurerm_resource_group.rg.name
 
   os_type  = "Linux"
-  sku_name = var.app.tier
+  sku_name = var.app.plan.tier
 }
 
 resource "azurerm_linux_web_app" "appService" {
@@ -276,12 +276,6 @@ resource "azurerm_private_endpoint" "privateEndpointApp" {
     subresource_names              = ["sites"]
     is_manual_connection           = false
   }
-
-  # ip_configuration{
-  #   name               = "app-endpoint-ip"
-  #   private_ip_address = var.privateEndpoint.app.privateIp
-  #   subresource_name   = "sites"
-  # }
 }
 
 resource "azurerm_private_endpoint" "privateEndpointSql" {
@@ -304,7 +298,7 @@ resource "azurerm_private_endpoint" "privateEndpointSql" {
 }
 
 resource "azurerm_public_ip" "gatewayIp" {
-  name                = "appgateway-pip"
+  name                = "tf-appgateway-pip"
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.region
   allocation_method   = "Static"
@@ -312,7 +306,7 @@ resource "azurerm_public_ip" "gatewayIp" {
 }
 
 resource "azurerm_application_gateway" "gateway" {
-  name                = "tf-appgateway"
+  name                = var.gateway.name
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.region
 
@@ -373,4 +367,24 @@ resource "azurerm_application_gateway" "gateway" {
     rule_set_type    = var.gateway.waf.rule_set_type
     rule_set_version = var.gateway.waf.rule_set_version
   }
+}
+
+resource "azurerm_portal_dashboard" "dashboard" {
+  name                = "my-custom-dashboard"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = var.region
+  tags = {
+    source = "terraform"
+  }
+  dashboard_properties = templatefile("dash.tpl", {
+    rg_name       = azurerm_resource_group.rg.name
+    app_name      = var.app.name
+    app_plan_name = var.app.plan.name
+    gateway_name  = var.gateway.name
+  })
+  depends_on = [
+    azurerm_service_plan.appPlan,
+    azurerm_linux_web_app.appService,
+    azurerm_application_gateway.gateway
+  ]
 }
