@@ -10,7 +10,7 @@ pool:
 
 variables:
 - name: containerUrl
-  value: https://mystorageaccount.blob.core.windows.net/container
+  value: https://damwarstorage04.blob.core.windows.net/container
 - name: packageName
   value: package.zip
 
