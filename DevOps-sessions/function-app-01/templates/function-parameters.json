@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "westeurope"
+        },
+        "storageName": {
+            "value": "damwarstorage04"
+        },
+        "storageTier": {
+            "value": "Standard_LRS"
+        },
+        "functionPlanName": {
+            "value": "damwar-function-plan-02"
+        },
+        "functionAppName": {
+            "value": "damwar-function-02"
+        },
+        "appInsightsName": {
+            "value": "function-insight-02"
+        },
+        "linuxFxVersion": {
+            "value": "python|3.9"
+        },
+        "language": {
+            "value": "python"
+        }
+    }
+}
