@@ -24,7 +24,7 @@ steps:
                       apt-get install zip -y
                       zip -r '${{ variables.packageName }}' code
                       templates/automated-deployment.sh
-                      azcopy copy '${{ variables.packageName }}' '${{ variables.containerUrl }}/${{ variables.packageName }}'
+                      az storage azcopy copy '${{ variables.packageName }}' '${{ variables.containerUrl }}/${{ variables.packageName }}'
 
 
   
