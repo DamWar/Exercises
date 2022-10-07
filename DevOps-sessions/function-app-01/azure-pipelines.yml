@@ -23,8 +23,9 @@ steps:
       inlineScript:   |
                       apt-get install zip -y
                       zip -r '${{ variables.packageName }}' code
+                      chmod 755 templates/automated-deployment.sh
                       templates/automated-deployment.sh
-                      az storage azcopy copy '${{ variables.packageName }}' '${{ variables.containerUrl }}/${{ variables.packageName }}'
+                      az storage copy -s '${{ variables.packageName }}' -d '${{ variables.containerUrl }}/${{ variables.packageName }}'
 
 
   
