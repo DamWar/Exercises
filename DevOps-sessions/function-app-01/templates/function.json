@@ -37,7 +37,7 @@
         "sku": {
             "name": "[parameters('storageTier')]"
         },
-        "kind": "Storage"
+        "kind": "StorageV2"
     },
     {
         "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
