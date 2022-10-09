@@ -106,7 +106,7 @@
             },
             {
                 "name": "WEBSITE_RUN_FROM_PACKAGE",
-                "value": "[format('https://{0}.blob.{1}/container', parameters('storageName'), environment().suffixes.storage)]"
+                "value": "[format('https://{0}.blob.{1}/container/package.zip', parameters('storageName'), environment().suffixes.storage)]"
             }
             ]    
         }
