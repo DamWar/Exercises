@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rgName": {
+            "value": "infrastructure-01"
+        },
+        "logicAppName": {
+            "value": "damwar-logic-02"
+        },
+        "vmName": {
+            "value": "logic-function-testing-vm-01"
+        }
+    }
+}
