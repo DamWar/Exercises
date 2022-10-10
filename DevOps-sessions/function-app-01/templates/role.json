@@ -16,7 +16,7 @@
     {
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "2020-10-01-preview",
-            "name": "[guid(concat(resourceGroup().id, 'appConfigurationDataReader'))]",
+            "name": "[guid(concat(resourceGroup().id, 'blobReader'))]",
             "scope": "[concat('Microsoft.Storage/storageAccounts', '/', parameters('storageName'))]",
             "properties": {
                 "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1')]",
