@@ -15,6 +15,6 @@ templateFile="role"
 az deployment group create                          \
     --name "add-function-app-role"                  \
     --resource-group "$resourceGroup"               \
-    -file "$templateFile.json"                      \
+    --file "$templateFile.json"                     \
     --parameters "$templateFile-parameters.json"    \
     --verbose
