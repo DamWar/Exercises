@@ -103,6 +103,10 @@
             {
                 "name": "FUNCTIONS_WORKER_RUNTIME",
                 "value": "[parameters('language')]"
+            },
+            {
+                "name": "WEBSITE_RUN_FROM_PACKAGE",
+                "value": "[format('https://{0}.blob.{1}/container', parameters('storageName'), environment().suffixes.storage)]"
             }
             ]    
         }
