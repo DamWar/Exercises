@@ -39,6 +39,8 @@ steps:
                       apt-get install zip -y
                       zip -r '${{ variables.packageName }}' code
                       az functionapp deployment source config-zip -g '${{ variables.resourceGroup }}' -n '${{ variables.functionAppName }}' --src '${{ variables.packageName }}'
+                      echo "az functionapp deployment source config-zip -g '${{ variables.resourceGroup }}' -n '${{ variables.functionAppName }}' --src '${{ variables.packageName }}'"
+                      unzip -l '${{ variables.packageName }}'
     displayName: Upload code package
 
 
