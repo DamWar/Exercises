@@ -11,9 +11,9 @@ def main(mytimer: func.TimerRequest) -> None:
     utc_timestamp = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
 
     if datetime.datetime.utcnow().hour == 8:
-        requests.post(url = URL, data = 'on')
+        requests.post(url = URL, json = "on")
     elif datetime.datetime.utcnow().hour == 20:
-        requests.post(url = URL, data = 'off')
+        requests.post(url = URL, json = "off")
     else:
         logging.error('Exact hour could not be read. Did not change the machine state.')
 
