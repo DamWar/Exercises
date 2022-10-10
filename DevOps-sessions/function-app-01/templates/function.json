@@ -40,14 +40,6 @@
         "kind": "Storage"
     },
     {
-        "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-        "apiVersion": "2021-06-01",
-        "name": "[format('{0}/default/container', parameters('storageName'))]",
-        "dependsOn": [
-            "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageName'))]"
-        ]
-    },
-    {
         "type": "Microsoft.Web/serverfarms",
         "apiVersion": "2021-02-01",
         "name": "[parameters('functionPlanName')]",
