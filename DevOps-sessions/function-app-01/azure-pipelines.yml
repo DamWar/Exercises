@@ -13,6 +13,10 @@ variables:
   value: https://damwarstorage04.blob.core.windows.net/container
 - name: packageName
   value: package.zip
+- name: resourceGroup
+  value: infrastructure-01
+- name: functionAppName
+  value: damwar-function-02
 
 steps:
   - task: AzureCLI@2
@@ -34,7 +38,7 @@ steps:
       inlineScript:   |
                       apt-get install zip -y
                       zip -r '${{ variables.packageName }}' code
-                      az storage copy -s '${{ variables.packageName }}' -d '${{ variables.containerUrl }}/${{ variables.packageName }}'
+                      az functionapp deployment source config-zip -g '${{ resourceGroup }}' -n '${{ functionAppName }}' --src '${{ variables.packageName }}'
     displayName: Upload code package
 
 
