@@ -8,7 +8,7 @@ deploy () {
 }
 resourceGroup="infrastructure-01"
 deployAutomation () {
-    deploy "add-automation-$1" resourceGroup "$1" 
+    deploy "add-automation-$1" $resourceGroup "$1" 
 }
 
 
