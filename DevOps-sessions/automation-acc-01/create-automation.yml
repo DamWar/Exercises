@@ -38,5 +38,16 @@ steps:
                       az automation runbook publish --automation-account-name damwar-automation-02 --resource-group infrastructure-01 --name "${{ variables.runbookName }}"
     displayName: Create runtime and upload its code
 
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'Azure'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript:   |
+                      cd templates
+                      chmod 755 links.sh
+                      ./links.sh
+    displayName: Link schedules to the runtime
+
 
   
