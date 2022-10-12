@@ -47,7 +47,7 @@ steps:
                       cd templates
                       chmod 755 links.sh
                       ./links.sh
-    displayName: Link schedules to the runtime
+    displayName: Link schedules to the runbook
 
 
   
