@@ -10,7 +10,7 @@ pool:
 
 variables:
 - name: runbookName
-  value: https://damwarstorage04.blob.core.windows.net/container
+  value: ControlAppService
 - name: runbookFile
   value: runbook.ps1
 
