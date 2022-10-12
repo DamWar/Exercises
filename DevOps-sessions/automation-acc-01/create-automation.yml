@@ -32,6 +32,7 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript:   |
+                      az config set extension.use_dynamic_install=yes_without_prompt
                       az automation runbook create --automation-account-name damwar-automation-02 --resource-group infrastructure-01 --name "${{ variables.runbookName }}" --type PowerShell
                       az automation runbook replace-content --automation-account-name damwar-automation-02 --resource-group infrastructure-01 --name "${{ variables.runbookName }}" --content "@./${{ variables.runbookFile }}"
                       az automation runbook publish --automation-account-name damwar-automation-02 --resource-group infrastructure-01 --name "${{ variables.runbookName }}"
