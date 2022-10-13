@@ -1,0 +1,26 @@
+
+trigger: none
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: AzureKeyVault@2
+  inputs:
+    azureSubscription: 'Azure'
+    KeyVaultName: 'damwar-vault-01'
+    SecretsFilter: '*'
+    RunAsPreJob: false
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Azure'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+                  az container create                                           \
+                  --name restart-apps-01                                        \
+                  --resource-group infrastructure-01                            \
+                  --location westeurope                                         \
+                  --image damwarregistry.azurecr.io/restart-apps:latest         \
+                  --command-line "$(AzDevOpsId) $(AzDevOpsSecret)" $(TenantId)  \
+                  --dns-name-label damwar-restart-apps
