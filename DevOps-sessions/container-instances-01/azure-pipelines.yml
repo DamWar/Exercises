@@ -23,4 +23,4 @@ steps:
                   --location westeurope                                         \
                   --image damwarregistry.azurecr.io/restart-apps:latest         \
                   --command-line "$(AzDevOpsId) $(AzDevOpsSecret)" $(TenantId)  \
-                  --dns-name-label damwar-restart-apps
+                  --dns-name-label damwarrestartapps
