@@ -22,5 +22,5 @@ steps:
                   --resource-group infrastructure-01                            \
                   --location westeurope                                         \
                   --image damwarregistry.azurecr.io/restart-apps:latest         \
-                  --command-line "$(AzDevOpsId) $(AzDevOpsSecret)" $(TenantId)  \
+                  --command-line "$(AzDevOpsId) $(AzDevOpsSecret) $(TenantId)"  \
                   --dns-name-label damwarrestartapps
