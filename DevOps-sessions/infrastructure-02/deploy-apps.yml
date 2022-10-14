@@ -4,8 +4,13 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: |
-          cd templates
-          chmod +x automated-deployment.sh
-          ./automated-deployment.sh
-  displayName: 'Deploy infrastructure'
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'Azure'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript:   |
+                      cd templates
+                      chmod +x automated-deployment.sh
+                      ./automated-deployment.sh
+    displayName: 'Deploy infrastructure'
