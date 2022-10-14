@@ -1,0 +1,42 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: |
+          cd docker
+          cat 'host.html' >> index.html
+  displayName: 'Prepare host-01 and host-02 sites'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'Docker HUB'
+    repository: 'damwar/host-01'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: 'latest'
+  displayName: 'Build and push host-01'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'Docker HUB'
+    repository: 'damwar/host-02'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: 'latest'
+  displayName: 'Build and push host-02'
+
+- script: |
+          cd docker
+          cat 'dr.html' >> index.html
+  displayName: 'Prepare dr site'
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'Docker HUB'
+    repository: 'damwar/dr'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: 'latest'
+  displayName: 'Build and push dr'
