@@ -3,30 +3,22 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "region": {
-            "value": "westeurope"
+            "value": "northeurope"
         },
         "planName": {
-            "value": "damwar-app-plan-01"
+            "value": "damwar-host-plan-02"
         },
         "appName": {
-            "value": [
-                "damwar-host-01",
-                "damwar-host-2",
-                "damwar-dr"
-            ]
+            "value": "damwar-host-02"
         },
         "planTier": {
             "value": "S1"
         },
         "nodesInWebFarm": {
-            "value": 3
+            "value": 1
         },
         "dockerHubImage": {
-            "value": [
-                "damwar/host-01:latest",
-                "damwar/host-02:latest",
-                "damwar/dr:latest"
-            ]
+            "value": "damwar/host-02:latest"
         }
     }
 }
