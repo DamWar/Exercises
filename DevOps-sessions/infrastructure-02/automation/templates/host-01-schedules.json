@@ -1,0 +1,37 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationName": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Automation/automationAccounts/schedules",
+            "apiVersion": "2020-01-13-preview",
+            "name": "[concat(parameters('automationName'), '/host-01-on')]",
+            "properties": {
+                "description": "Turn the application on for the first half hour",
+                "startTime": "23:15:00",
+                "expiryTime": "9999-12-31T23:59:59.9999999+00:00",
+                "interval": 1,
+                "frequency": "Hour",
+                "timeZone": "Europe/Warsaw"
+            }
+        },
+        {
+            "type": "Microsoft.Automation/automationAccounts/schedules",
+            "apiVersion": "2020-01-13-preview",
+            "name": "[concat(parameters('automationName'), '/host-01-off')]",
+            "properties": {
+                "description": "Turn the application off for the second half hour",
+                "startTime": "23:45:00",
+                "expiryTime": "9999-12-31T23:59:59.9999999+00:00",
+                "interval": 1,
+                "frequency": "Hour",
+                "timeZone": "Europe/Warsaw"
+            }
+        }
+    ]
+}
