@@ -14,5 +14,5 @@ deployAutomation () {
 
 deployAutomation "account"
 deployAutomation "host-01-schedules"
-deployAutomation "host-01-schedules"
+deployAutomation "host-02-schedules"
 deployAutomation "role"
