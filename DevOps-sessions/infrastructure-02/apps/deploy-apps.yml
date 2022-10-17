@@ -10,7 +10,7 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript:   |
-                      cd templates
+                      cd apps/templates
                       chmod +x automated-deployment.sh
                       ./automated-deployment.sh
     displayName: 'Deploy infrastructure'
