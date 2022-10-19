@@ -1,0 +1,140 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "resourceGroup": {
+            "type": "string",
+            "defaultValue": "infrastructure-03"
+        },
+        "privateEndpointName": {
+            "type": "string"
+        },
+        "privateLinkName": {
+            "type": "string"
+        },
+        "appName": {
+            "type": "string"
+        },
+        "planName": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "planTier": {
+            "type": "string"
+        },
+        "nodesInWebFarm": {
+            "type": "int",
+            "defaultValue": 1
+        },
+        "dockerHubImage": {
+            "type": "string",
+            "defaultValue": "nginx:alpine",
+            "metadata": {
+                "description": "The Runtime stack of current web app"
+            }
+        },
+        "vnetAddressSpace": {
+            "type": "string"
+        },
+        "subnets": {
+            "type": "array"
+        }
+    },
+    "variables": {
+        "subnetId": "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+        "linuxFxVersion": "[concat('DOCKER|', parameters('dockerHubImage'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2021-08-01",
+            "name": "[parameters('vnetName')]",
+            "location": "[parameters('region')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressSpace')]"
+                    ]
+                },
+                "copy": [
+                    {
+                        "name": "subnets",
+                        "count": "[length(parameters('subnets'))]",
+                        "input": "[parameters('subnets')[copyIndex('subnets')]]"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('planName')]",
+            "location": "[parameters('region')]",
+            "sku": {
+                "name": "[parameters('planTier')]",
+                "size": "[parameters('planTier')]",
+                "capacity": "[parameters('nodesInWebFarm')]"
+            },
+            "kind": "linux",
+            "properties": {
+                "perSiteScaling": false,
+                "reserved": true,
+                "targetWorkerCount": 0,
+                "targetWorkerSizeId": 0
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('appName')]",
+            "location": "[parameters('region')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('planName'))]"
+            ],
+            "kind": "app",
+            "identity": {
+                    "type": "SystemAssigned"
+            },
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('planName'))]",
+                "siteConfig": {
+                    "linuxFxVersion": "[variables('linuxFxVersion')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('privateEndpointName')]",
+            "location": "[parameters('region')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('appName'))]"
+            ],
+            "properties": {
+                "subnet": {
+                    "id": "[variables('subnetId')]"
+                },
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateLinkName')]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId('Microsoft.Web/sites', parameters('appName'))]",
+                            "groupIds": [
+                                "sites"
+                            ]
+                        }
+                    }
+                ]
+            } 
+        }
+    ]
+}

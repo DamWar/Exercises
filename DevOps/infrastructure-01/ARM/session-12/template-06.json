@@ -1,0 +1,178 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "gatewayName": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "privateEndpoints": {
+            "type": "array"
+        },
+        "wafRules": {
+            "type": "object"
+        }
+    },
+    "variables":{
+        "subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+        "publicIp": "[concat(parameters('gatewayName'), '-ip')]",
+        "frontendIpconfig": "frontend-ipconf-01",
+        "frontendPort": "frontend-port-01",
+        "backendAddressPool": "backend-address-pool-01",
+        "backendHttpSettings": "backend-http-settings-01",
+        "httpListener": "http-listener-01"
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-08-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('publicIp')]",
+            "location": "[parameters('region')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static",
+                "publicIPAddressVersion": "IPv4"
+            }
+        },
+        {
+            "type": "Microsoft.Network/applicationGateways",
+            "apiVersion": "2022-01-01",
+            "name": "[parameters('gatewayName')]",
+            "location": "[parameters('region')]",
+            "properties": {
+                "webApplicationFirewallConfiguration": "[parameters('wafRules')]",
+                "sku": {
+                    "capacity": 1,
+                    "name": "WAF_v2",
+                    "tier": "WAF_v2"
+                },
+                "backendAddressPools": [
+                    {
+                        "name": "[variables('backendAddressPool')]",
+                        "properties": {
+                            "backendAddresses": [
+                                {
+                                    "fqdn": "[parameters('gatewayName')]",
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "backendHttpSettingsCollection": [
+                    {
+                        "name": "[variables('backendHttpSettings')]",
+                        "properties": {
+                            "port": 888,
+                            "protocol": "Https",
+                            "requestTimeout": 30
+                        }
+                    }
+                ],
+                "frontendIPConfigurations": [
+                    {   
+                        "name": "[variables('frontendIpconfig')]",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIp'))]"
+                            }
+                        }
+                    }
+                ],
+                "frontendPorts": [
+                    {
+                        "name": "[variables('frontendPort')]",
+                        "properties": {
+                            "port": 777
+                        }
+                    }
+                ],
+                "gatewayIPConfigurations": [
+                    {
+                        "name": "gateway-ipconf-01",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetId')]"
+                            }
+                        }
+                    }
+                ],
+                "httpListeners": [
+                    {
+                        "name": "[variables('httpListener')]",
+                        "properties": {
+                            "customErrorConfigurations": [
+                                {
+                                    "customErrorPageUrl": "https://www.google.com/index.html",
+                                    "statusCode": "HttpStatus403"
+                                }
+                            ],
+                            "frontendIPConfiguration": {
+                                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parameters('gatewayName'), variables('frontendIpconfig'))]"
+                            },
+                            "FrontendPort": {
+                                "Id": "[resourceId('Microsoft.Network/applicationgateways/frontendPorts', parameters('gatewayName'), variables('frontendPort'))]"
+                            },
+                            "protocol": "http",
+                        }
+                    }
+                ],
+                "requestRoutingRules": [
+                    {
+                        "name": "routing-rules-01",
+                        "properties": {
+                            "priority": 300,
+                            "backendAddressPool": {
+                                "id": "[resourceId('Microsoft.Network/applicationgateways/backendAddressPools', parameters('gatewayName'), variables('backendAddressPool'))]"
+                            },
+                            "backendHttpSettings": {
+                                "id": "[resourceId('Microsoft.Network/applicationgateways/backendHttpSettingsCollection', parameters('gatewayName'), variables('backendHttpSettings'))]"
+                            },
+                            "httpListener": {
+                                "id": "[resourceId('Microsoft.Network/applicationgateways/httpListeners', parameters('gatewayName'), variables('httpListener'))]"
+                            },
+                            "ruleType": "basic",
+                        }
+                    }
+                ],
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('privateEndpoints')[copyindex()].name]",
+            "location": "[parameters('region')]",
+            "properties": {
+                "subnet": {
+                    "id": "[resourceId(parameters('privateEndpoints')[copyindex()].subnet.type, parameters('privateEndpoints')[copyindex()].subnet.vnetName, parameters('privateEndpoints')[copyindex()].subnet.subnetName)]"
+                },
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpoints')[copyindex()].privateLinkServiceConnections.name]",
+                        "properties": {
+                            "privateLinkServiceId": "[resourceId(parameters('privateEndpoints')[copyindex()].privateLinkServiceConnections.properties.privateLinkServiceResource.type, parameters('privateEndpoints')[copyindex()].privateLinkServiceConnections.properties.privateLinkServiceResource.name)]",
+                            "groupIds": [
+                                "sites"
+                            ]
+                        }
+                    }
+                ]
+            },
+            "copy": {
+                "name": "privateEndpointLoop",
+                "count": "[length(parameters('privateEndpoints'))]"
+            }
+        }
+    ]
+}

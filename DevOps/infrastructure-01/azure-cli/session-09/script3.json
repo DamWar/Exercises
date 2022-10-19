@@ -1,0 +1,7 @@
+{
+    "resourceGroup": "infrastructure-01",
+    "appName": "damwarapp",
+    "storageName": "https://damwarstorage01.blob.core.windows.net/appbackup?sp=r&st=2022-08-30T03:35:45Z&se=2022-08-30T11:35:45Z&spr=https&sv=2021-06-08&sr=c&sig=U5eDzvuySXaJNSXjB%2B5DovxA0FRBmqjNSO%2B7AKVgqhI%3D",
+    "frequency": "5d",
+    "retention": "14"
+}

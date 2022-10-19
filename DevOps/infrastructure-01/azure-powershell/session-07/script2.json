@@ -1,0 +1,12 @@
+{
+    "region": "uksouth",
+    "resourceGroup": "infrastructure-02",
+    "vnetName": "build-agents-vnet",
+    "vnetAddressSpace": "10.0.0.0/16",
+    "arrOfSubnets": [
+        "agents-subnet",
+        "10.0.1.0/24",
+        "jumpbox-subnet",
+        "10.0.2.0/24"
+    ]
+}

@@ -1,0 +1,153 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "region": {
+      "type": "string",
+      "defaultValue": "westeurope"
+    },
+    "vnetName": {
+      "type": "string"
+    },
+    "vnetAddressSpace": {
+      "type": "string"
+    },
+    "subnetName": {
+      "type": "string"
+    },
+    "subnets": {
+      "type": "array"
+    },
+    "serverName": {
+      "type": "string"
+    },
+    "dbName": {
+      "type": "string"
+    },
+    "dbTier": {
+      "type": "string",
+      "defaultValue": "S1"
+    },
+    "adminLogin": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "secureString"
+    },
+    "dbBackupPolicy": {
+      "type": "object"
+    },
+    "firewallRules": {
+      "type": "array"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2022-01-01",
+      "name": "[format('{0}/{1}', parameters('vnetName'), parameters('subnetName'))]",
+      "properties": {
+        "addressPrefix": "10.0.2.0/24",
+        "serviceEndpoints": [
+          {
+            "service": "Microsoft.Sql",
+            "locations": [
+              "[parameters('region')]"
+            ]
+          }
+        ],
+        "privateEndpointNetworkPolicies": "Disabled",
+        "privateLinkServiceNetworkPolicies": "Disabled"
+      }
+    },
+    {
+      "type": "Microsoft.Sql/servers/virtualNetworkRules",
+      "apiVersion": "2022-02-01-preview",
+      "name": "[format('{0}/Endpoints', parameters('serverName'))]",
+      "properties": {
+        "virtualNetworkSubnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+        "ignoreMissingVnetServiceEndpoint": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(format('{0}/{1}', parameters('vnetName'), parameters('subnetName')), '/')[0], split(format('{0}/{1}', parameters('vnetName'), parameters('subnetName')), '/')[1])]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-08-01",
+      "name": "[parameters('vnetName')]",
+      "location": "[parameters('region')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetAddressSpace')]"
+          ]
+        }
+      }
+    },
+    {
+      "copy": {
+        "name": "subnet",
+        "count": "[length(parameters('subnets'))]",
+        "mode": "serial",
+        "batchSize": 1
+      },
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/{1}', parameters('vnetName'), parameters('subnets')[copyIndex()].name)]",
+      "properties": "[parameters('subnets')[copyIndex()].properties]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2022-02-01-preview",
+      "name": "[parameters('serverName')]",
+      "location": "[parameters('region')]",
+      "properties": {
+        "administratorLogin": "[parameters('adminLogin')]",
+        "administratorLoginPassword": "[parameters('adminPassword')]",
+        "version": "12.0"
+      }
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "apiVersion": "2022-02-01-preview",
+      "name": "[format('{0}/{1}', parameters('serverName'), parameters('dbName'))]",
+      "location": "[parameters('region')]",
+      "sku": {
+        "name": "[parameters('dbTier')]"
+      },
+      "properties": {
+        "collation": "SQL_Latin1_General_CP1_CI_AS",
+        "maxSizeBytes": 1073741824
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('serverName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies",
+      "apiVersion": "2022-02-01-preview",
+      "name": "[format('{0}/{1}/{2}', parameters('serverName'), parameters('dbName'), 'Default')]",
+      "properties": "[parameters('dbBackupPolicy')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('serverName'), parameters('dbName'))]"
+      ]
+    },
+    {
+      "copy": {
+        "name": "sqlFirewallRules",
+        "count": "[length(range(0, length(parameters('firewallRules'))))]"
+      },
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "apiVersion": "2022-02-01-preview",
+      "name": "[format('{0}/{1}', parameters('serverName'), format('ipRule{0}', range(0, length(parameters('firewallRules')))[copyIndex()]))]",
+      "properties": "[parameters('firewallRules')[range(0, length(parameters('firewallRules')))[copyIndex()]]]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('serverName'))]"
+      ]
+    }
+  ]
+}

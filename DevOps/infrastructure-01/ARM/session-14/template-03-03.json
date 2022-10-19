@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "configName": {
+            "type": "string"
+        },
+        "appName": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "identity_resource_id": "[concat(resourceId('Microsoft.Web/sites', parameters('appName')), '/providers/Microsoft.ManagedIdentity/Identities/default')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.AppConfiguration/configurationStores",
+            "apiVersion": "2021-10-01-preview",
+            "name": "[parameters('configName')]",
+            "location": "[parameters('region')]",
+            "sku": {
+                "name": "standard"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2020-10-01-preview",
+            "name": "[guid(concat(resourceGroup().id, 'appConfigurationDataReader'))]",
+            "scope": "[concat('Microsoft.AppConfiguration/configurationStores', '/', parameters('configName'))]",
+            "dependsOn": [
+                "[parameters('configName')]"
+            ],
+            "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '516239f1-63e1-4d78-a4de-a74fb236a071')]",
+                "principalId": "[reference(variables('identity_resource_id'), '2022-01-31-PREVIEW').principalId]"
+            }
+        }
+    ]
+}

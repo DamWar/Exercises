@@ -1,0 +1,6 @@
+{
+    "region": "uksouth",
+    "resourceGroup": "infrastructure-02",
+    "storageName": "damwarstorage02",
+    "storageTier": "Premium_LRS"
+}

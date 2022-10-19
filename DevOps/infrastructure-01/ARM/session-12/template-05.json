@@ -1,0 +1,103 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "resourceGroup": {
+            "type": "string",
+            "defaultValue": "infrastructure-03"
+        },
+        "vmName": {
+            "type": "string"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "vmImage": {
+            "type": "object"
+        },
+        "vmTier": {
+            "type": "string",
+            "defaultValue": "Standard_D1_v2"
+        },
+        "vmDiskTier": {
+            "type": "string"
+        },
+        "vmDiskSizeGb": {
+            "type": "int",
+            "defaultValue": 30
+        }
+    },
+    "variables": {
+        "subnetId": "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+    },
+    "resources": [
+        { 
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2022-03-01",
+            "name": "[parameters('vmName')]",
+            "location": "[parameters('region')]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmTier')]"
+                },
+                "networkProfile": {
+                    "networkApiVersion": "2020-11-01",
+                    "networkInterfaceConfigurations": [
+                        {
+                            "name": "[concat(parameters('vmName'), '-nic')]",
+                            "properties": {
+                                "ipConfigurations": [
+                                    {
+                                        "name": "[concat(parameters('vmName'), '-ipconf')]",
+                                        "properties": {
+                                            "privateIPAddressVersion": "IPv4",
+                                            "publicIPAddressConfiguration": {
+                                                "name": "[concat(parameters('vmName'), '-publicip')]",
+                                                "properties": {
+                                                    "dnsSettings": {
+                                                        "domainNameLabel": "[parameters('vmName')]"
+                                                    },
+                                                    "publicIPAddressVersion": "IPv4"
+                                                },
+                                                "sku": {
+                                                    "name": "Basic",
+                                                }
+                                            },
+                                            "subnet": {
+                                                "id": "[variables('subnetId')]"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "adminPassword": "P455/w0rd",
+                    "adminUsername": "azureuser",
+                    "computerName": "azurepc",
+                },
+                "storageProfile": {
+                    "imageReference": "[parameters('vmImage')]",
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "deleteOption": "Delete",
+                        "diskSizeGB": "[parameters('vmDiskSizeGb')]",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('vmDiskTier')]"
+                        },
+                        "name": "[concat(parameters('vmName'), '-osdisk')]"
+                    }
+                }
+            }
+        }
+    ]
+}

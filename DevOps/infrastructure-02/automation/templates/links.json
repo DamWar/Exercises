@@ -1,0 +1,53 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationName": {
+            "type": "string"
+        },
+        "appName":{
+            "type": "string"
+        },
+        "scheduleNamePrefix":{
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('automationName'), '/', guid(concat(resourceGroup().id, 'schedule-on')))]",
+            "type": "Microsoft.Automation/automationAccounts/jobSchedules",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "schedule": {
+                    "name": "[concat(parameters('scheduleNamePrefix'),'-on')]"
+                },
+                "runbook": {
+                    "name": "ControlAppService"
+                },
+                "parameters": {
+                    "ResourceGroupName":"infrastructure-01",
+                    "AppName": "[parameters('appName')]",
+                    "DesiredState": "on"
+                }
+            }
+        },
+        {
+            "name": "[concat(parameters('automationName'), '/', guid(concat(resourceGroup().id, 'schedule-off')))]",
+            "type": "Microsoft.Automation/automationAccounts/jobSchedules",
+            "apiVersion": "2015-10-31",
+            "properties": {
+                "schedule": {
+                    "name": "[concat(parameters('scheduleNamePrefix'),'-off')]"
+                },
+                "runbook": {
+                    "name": "ControlAppService"
+                },
+                "parameters": {
+                    "ResourceGroupName":"infrastructure-01",
+                    "AppName": "[parameters('appName')]",
+                    "DesiredState": "off"
+                }
+            }
+        }
+    ]
+}

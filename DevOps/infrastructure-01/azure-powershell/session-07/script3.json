@@ -1,0 +1,16 @@
+{
+    "region": "uksouth",
+    "resourceGroup": "infrastructure-02",
+    "nsgName": "build-agents-nsg",
+    "arrOfRules": [
+        "test-rule",
+        "100",
+        "",
+        "22",
+        "",
+        "*",
+        "",
+        "22",
+        "Deny"
+    ]
+}

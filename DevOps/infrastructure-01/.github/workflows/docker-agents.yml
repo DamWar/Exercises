@@ -1,0 +1,36 @@
+name: Docker build dotnet and Node
+
+on: 
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  Build-push-docker:
+
+    runs-on: ubuntu-latest
+
+    steps:
+        - uses: actions/checkout@v3
+        
+        - name: Set up QEMU
+          uses: docker/setup-qemu-action@v2
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v2
+        - name: Login to DockerHub
+          uses: docker/login-action@v2
+          with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_TOKEN }}
+        - name: Build and push dotnet agent
+          run:  |
+                cd docker
+                docker build -t damwar/dotnet-sdk:latest -f Dockerfile-dotnet .
+                docker push damwar/dotnet-sdk:latest
+        - name: Build and push Node agent
+          run:  |
+                cd docker
+                docker build -t damwar/node-sdk:latest -f Dockerfile-node .
+                docker push damwar/node-sdk:latest

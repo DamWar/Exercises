@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appName": {
+            "value": "damwar-app-01"
+        },
+        "storageName": {
+            "value": "damwarstorage2"
+        },
+        "storageContainerSAS": {
+            "value": "myblob?sp=r&st=2022-09-01T22:08:41Z&se=2022-09-02T06:08:41Z&spr=https&sv=2021-06-08&sr=c&sig=opw%2BWieLzF8GoI%2F6WXNuLaEmscURlXkax%2BzB0NGQ52U%3D"
+        },
+        "scheduleAndRetention": {
+            "value": {
+                "frequencyInterval": "24",
+                "frequencyUnit": "Hour",
+                "keepAtLeastOneBackup": "False",
+                "retentionPeriodInDays": "7"
+            }
+        },
+        "databases": {
+            "value": [
+                {
+                    "connectionString": "Server=tcp:damwar-sql-server-01.database.windows.net,1433;Initial Catalog=damwar-sql-db-01;Persist Security Info=False;User ID=azureuser;Password=P455/w0rd;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+                    "connectionStringName": "conn-str",
+                    "databaseType": "SqlAzure",
+                    "name": "damwar-sql-db-01"
+                }
+            ]
+        }
+    }
+}

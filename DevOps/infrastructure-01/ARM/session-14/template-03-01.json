@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "planName": {
+            "type": "string",
+            "defaultValue": "exampleplan"
+        },
+        "appName": {
+            "type": "string",
+            "minLength": 2
+        },
+        "planTier": {
+            "type": "string",
+            "minLength": 2,
+            "defaultValue": "B1"
+        },
+        "nodesInWebFarm": {
+            "type": "int",
+            "defaultValue": 1
+        },
+        "dockerHubImage": {
+            "type": "string",
+            "defaultValue": "nginx:alpine",
+            "metadata": {
+                "description": "The Runtime stack of current web app"
+            }
+        }
+    },
+    "variables":{
+        "linuxFxVersion": "[concat('DOCKER|', parameters('dockerHubImage'))]"
+    },
+    "resources": [
+            {
+                "type": "Microsoft.Web/serverfarms",
+                "apiVersion": "2021-03-01",
+                "name": "[parameters('planName')]",
+                "location": "[parameters('region')]",
+                "sku": {
+                    "name": "[parameters('planTier')]",
+                    "size": "[parameters('planTier')]",
+                    "capacity": "[parameters('nodesInWebFarm')]"
+                },
+                "kind": "linux",
+                "properties": {
+                    "perSiteScaling": false,
+                    "reserved": true,
+                    "targetWorkerCount": 0,
+                    "targetWorkerSizeId": 0
+                }
+            },
+            {
+                "type": "Microsoft.Web/sites",
+                "apiVersion": "2021-03-01",
+                "name": "[parameters('appName')]",
+                "location": "[parameters('region')]",
+                "dependsOn": [
+                    "[resourceId('Microsoft.Web/serverfarms', parameters('planName'))]"
+                ],
+                "kind": "app",
+                "identity": {
+                     "type": "SystemAssigned"
+                },
+                "properties": {
+                    "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('planName'))]",
+                    "siteConfig": {
+                        "linuxFxVersion": "[variables('linuxFxVersion')]"
+                    }
+                }
+            }
+    ]
+}

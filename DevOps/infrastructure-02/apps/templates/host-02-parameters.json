@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "value": "northeurope"
+        },
+        "planName": {
+            "value": "damwar-host-plan-02"
+        },
+        "appName": {
+            "value": "damwar-host-02"
+        },
+        "planTier": {
+            "value": "S1"
+        },
+        "nodesInWebFarm": {
+            "value": 1
+        },
+        "dockerHubImage": {
+            "value": "damwar/host-02:latest"
+        }
+    }
+}

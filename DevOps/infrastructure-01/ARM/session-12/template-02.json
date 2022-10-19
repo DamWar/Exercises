@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "region": {
+            "type": "string",
+            "defaultValue": "westeurope"
+        },
+        "vnetName": {
+            "type": "string"
+        },
+        "vnetAddressSpace": {
+            "type": "string"
+        },
+        "subnets": {
+            "type": "array"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2021-08-01",
+            "name": "[parameters('vnetName')]",
+            "location": "[parameters('region')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressSpace')]"
+                    ]
+                },
+                "copy": [
+                    {
+                        "name": "subnets",
+                        "count": "[length(parameters('subnets'))]",
+                        "input": "[parameters('subnets')[copyIndex('subnets')]]"
+                    }
+                ]
+            }
+        }
+    ]
+}
