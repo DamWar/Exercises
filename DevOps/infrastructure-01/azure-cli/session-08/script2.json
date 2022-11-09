@@ -1,8 +1,0 @@
-{
-    "region": "uksouth",
-    "resourceGroup": "infrastructure-01",
-    "appName": "linux-based-01",
-    "appTier": "S2",
-    "instanceCount": "2",
-    "dockerImage": "damwar/catalog-api:latest"
-}
