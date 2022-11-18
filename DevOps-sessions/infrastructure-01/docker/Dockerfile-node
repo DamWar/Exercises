@@ -20,3 +20,5 @@ RUN chmod +x start.sh
 
 RUN apt-get install -y nodejs
 RUN apt-get install -y npm
+
+ENTRYPOINT ["./start.sh"]
