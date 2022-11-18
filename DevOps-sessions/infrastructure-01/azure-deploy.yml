@@ -12,8 +12,7 @@ steps:
       scriptLocation: 'inlineScript'
       inlineScript:   |
                       az config set defaults.group=infrastructure-01
-                      cd azure-cli
-                      cd session-07
+                      cd azure-cli/session-07
                       chmod 755 script2.sh
                       ./script2.sh
                       chmod 755 script3.sh
