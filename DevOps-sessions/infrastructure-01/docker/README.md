@@ -1,0 +1,1 @@
+Those files were created to prepare Azure DevOps agent images with additional software (like npm or dotnet)
