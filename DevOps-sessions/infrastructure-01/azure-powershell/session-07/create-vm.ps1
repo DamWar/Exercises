@@ -18,7 +18,7 @@ if((-not $reservedIp) -or ($reservedIp -eq "null") -or ($reservedIp -eq "")){
     $IPconfig = New-AzNetworkInterfaceIpConfig -Name $ipConfigName -PrivateIpAddressVersion IPv4 -Subnet $Subnet
 }else{
     $PIP = New-AzPublicIPAddress -Name $pipName -ResourceGroupName $resourceGroup -Location $region -AllocationMethod $reservedIp
-    $IPconfig = New-AzNetworkInterfaceIpConfig -Name $ipConfigName -PublicIpAddress $PIP1 -Subnet $Subnet
+    $IPconfig = New-AzNetworkInterfaceIpConfig -Name $ipConfigName -PublicIpAddress $PIP -Subnet $Subnet
 }
 
 $NIC = New-AzNetworkInterface -Name $nicName -ResourceGroupName $resourceGroup -Location $region -IpConfiguration $IPconfig
