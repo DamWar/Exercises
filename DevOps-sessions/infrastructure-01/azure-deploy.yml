@@ -13,8 +13,8 @@ steps:
       inlineScript:   |
                       az config set defaults.group=infrastructure-01
                       cd azure-cli/session-07
-                      chmod 755 script2.sh
-                      ./script2.sh
-                      chmod 755 script3.sh
-                      ./script3.sh
+                      chmod 755 create-vnet-subnets.sh
+                      ./create-vnet-subnets.sh
+                      chmod 755 create-nsg.sh
+                      ./create-nsg.sh
   
