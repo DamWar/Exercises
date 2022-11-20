@@ -1,0 +1,3 @@
+### Todo
+
+- [ ] Optimize delete loop
