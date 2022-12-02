@@ -1,0 +1,1 @@
+These files allow storage account deployment and static website hosting
